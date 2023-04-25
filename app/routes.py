@@ -43,15 +43,20 @@ def get_planets():
     
     return jsonify(result)
 
-@planet_bp.route("/<id>", methods=["GET"])
-def get_planet(id):
+def validate_planet(id):
     try:
         id = int(id)
     except:
         abort(make_response({"message":f"id {id} is invalid"}, 400))
-
+    
     for planet in planets:
         if planet.id == id:
-            return planet.make_planet_dict()
-
+            return planet
+    
     abort(make_response({"message":f"planet {id} not found"}, 404))
+
+@planet_bp.route("/<id>", methods=["GET"])
+def get_planet(id):
+    planet = validate_planet(id)
+    return planet.make_planet_dict()
+
