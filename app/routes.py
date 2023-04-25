@@ -7,7 +7,14 @@ class Planet:
         self.description = description
         self.radius = radius
 
-# Revisit how to fix formatting of strings in description
+    def make_planet_dict(self):
+        return dict(
+            id = self.id,
+            name = self.name,
+            description = self.description,
+            radius = self.radius,
+        )
+
 planets = [
     Planet(1, "Mercury", "Mercury is the smallest planet in our solar system.",
        "1,516 mi"),
@@ -32,12 +39,7 @@ planet_bp = Blueprint("planets", __name__, url_prefix="/planets")
 def get_planets():
     result = []
     for planet in planets:
-        result.append(dict(
-            id = planet.id,
-            name = planet.name,
-            description = planet.description,
-            radius = planet.radius,
-        ))
+        result.append(planet.make_planet_dict())
     
     return jsonify(result)
 
@@ -50,11 +52,6 @@ def get_planet(id):
 
     for planet in planets:
         if planet.id == id:
-            return dict(
-                id = planet.id,
-                name = planet.name,
-                description = planet.description,
-                radius = planet.radius,
-            )
+            return planet.make_planet_dict()
 
     abort(make_response({"message":f"planet {id} not found"}, 404))
