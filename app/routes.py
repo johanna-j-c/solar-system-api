@@ -104,3 +104,12 @@ def update_planet(id):
 
     db.session.commit()
     return make_response(f"Planet {planet_to_update.name} updated", 200)
+
+@planet_bp.route("/<id>", methods=["DELETE"])
+def delete_planet(id):
+    planet_to_delete = validate_planet(id)
+
+    db.session.delete(planet_to_delete)
+    db.session.commit()
+
+    return make_response(f"Planet {planet_to_delete.name} deleted", 200)
