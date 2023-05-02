@@ -67,28 +67,40 @@ def get_all_planets():
     
     return jsonify(results)
 
-# @planet_bp.route("", methods=["GET"])
-# def get_planets():
-#     result = []
-#     for planet in planets:
-#         result.append(planet.make_planet_dict())
-    
-#     return jsonify(result)
+def validate_planet(id):
+    try:
+        id = int(id)
+    except:
+        message = f"Planet {id} is invalid"
+        abort(make_response({"message": message}, 400))
 
-# def validate_planet(id):
-#     try:
-#         id = int(id)
-#     except:
-#         abort(make_response({"message":f"id {id} is invalid"}, 400))
-    
-#     for planet in planets:
-#         if planet.id == id:
-#             return planet
-    
-#     abort(make_response({"message":f"planet {id} not found"}, 404))
+    planet = Planet.query.get(id)
 
-# @planet_bp.route("/<id>", methods=["GET"])
-# def get_planet(id):
-#     planet = validate_planet(id)
-#     return planet.make_planet_dict()
+    if not planet:
+        message = f"Planet {id} is not found"
+        abort(make_response({"message": message}, 404))
 
+    return planet
+
+@planet_bp.route("/<id>", methods=["GET"])
+def get_planet(id):
+    planet = validate_planet(id)
+    planet_dict = dict(
+        id=planet.id,
+        name=planet.name,
+        description=planet.description,
+        radius=planet.radius
+    )
+    return planet_dict
+
+@planet_bp.route("/<id>", methods=["PUT"])
+def update_planet(id):
+    planet_data = request.get_json()
+    planet_to_update = validate_planet(id)
+
+    planet_to_update.name = planet_data["name"]
+    planet_to_update.description = planet_data["description"]
+    planet_to_update.radius = planet_data["radius"]
+
+    db.session.commit()
+    return make_response(f"Planet {planet_to_update.name} updated", 200)
