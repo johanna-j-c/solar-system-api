@@ -36,3 +36,23 @@ def one_planet(app):
     db.session.add(planet)
     db.session.commit()
     return planet
+
+@pytest.fixture
+def multiple_planets(app):
+    # Arrange
+    planet1 = Planet(
+        name="Venus",
+        description="Venus is extremely hot.",
+        radius="3,760.4 mi"
+    )
+    planet2 = Planet(
+        name="Earth",
+        description="Earth is the third planet from the Sun.",
+        radius="3,958.8 mi"
+    )
+
+    planets = [planet1, planet2]
+
+    db.session.add_all(planets)
+    db.session.commit()
+    return planets

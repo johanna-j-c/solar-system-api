@@ -22,3 +22,30 @@ def test_get_planet_with_no_data(client):
     response_body = response.get_json()
 
     assert response.status_code == 404
+
+def test_get_all_planets_with_valid_data(client, multiple_planets):
+    response = client.get(f"/planets")
+    response_body = response.get_json()
+
+    assert response.status_code == 200
+    assert len(response_body) == 2
+    assert response_body[0]["id"] == multiple_planets[0].id
+    assert response_body[0]["name"] == multiple_planets[0].name
+    assert response_body[0]["description"] == multiple_planets[0].description
+    assert response_body[0]["radius"] == multiple_planets[0].radius
+    assert response_body[1]["id"] == multiple_planets[1].id
+    assert response_body[1]["name"] == multiple_planets[1].name
+    assert response_body[1]["description"] == multiple_planets[1].description
+    assert response_body[1]["radius"] == multiple_planets[1].radius
+
+def test_create_one_planet(client):
+    response = client.post("/planets", json={
+        "name": "Yoshi",
+        "description": "Adorable and egg filled planet.",
+        "radius": "7,156.9 mi"
+    })
+
+    response_body = response.get_json()
+
+    assert response.status_code == 201
+    assert response_body == "Planet Yoshi successfully created."

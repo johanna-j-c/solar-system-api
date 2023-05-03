@@ -50,7 +50,7 @@ def create_planet():
 
     message = f"Planet {new_planet.name} successfully created."
 
-    return make_response(message, 201)
+    return make_response(jsonify(message), 201)
 
 @planet_bp.route("", methods=["GET"])
 def get_all_planets():
@@ -103,7 +103,7 @@ def update_planet(id):
     planet_to_update.radius = planet_data["radius"]
 
     db.session.commit()
-    return make_response(f"Planet {planet_to_update.name} updated", 200)
+    return make_response(jsonify(f"Planet {planet_to_update.name} updated"), 200)
 
 @planet_bp.route("/<id>", methods=["DELETE"])
 def delete_planet(id):
@@ -112,4 +112,4 @@ def delete_planet(id):
     db.session.delete(planet_to_delete)
     db.session.commit()
 
-    return make_response(f"Planet {planet_to_delete.name} deleted", 200)
+    return make_response(jsonify(f"Planet {planet_to_delete.name} deleted"), 200)
