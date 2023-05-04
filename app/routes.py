@@ -60,7 +60,7 @@ def get_all_planets():
     
     return jsonify(results)
 
-def validate_planet(cls, model_id):
+def validate_model(cls, model_id):
     try:
         model_id = int(model_id)
     except:
@@ -77,14 +77,14 @@ def validate_planet(cls, model_id):
 
 @planet_bp.route("/<id>", methods=["GET"])
 def get_planet(id):
-    planet = validate_planet(Planet, id)
+    planet = validate_model(Planet, id)
 
     return planet.to_dict()
 
 @planet_bp.route("/<id>", methods=["PUT"])
 def update_planet(id):
     planet_data = request.get_json()
-    planet_to_update = validate_planet(Planet, id)
+    planet_to_update = validate_model(Planet, id)
 
     planet_to_update.name = planet_data["name"]
     planet_to_update.description = planet_data["description"]
@@ -95,7 +95,7 @@ def update_planet(id):
 
 @planet_bp.route("/<id>", methods=["DELETE"])
 def delete_planet(id):
-    planet_to_delete = validate_planet(Planet, id)
+    planet_to_delete = validate_model(Planet, id)
 
     db.session.delete(planet_to_delete)
     db.session.commit()
