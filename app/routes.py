@@ -55,7 +55,15 @@ def create_planet():
 
 @planet_bp.route("", methods=["GET"])
 def get_all_planets():
-    planets = Planet.query.all()
+    name_query = request.args.get("name")
+    radius_query = request.args.get("radius")
+    if name_query:
+        planets = Planet.query.filter_by(name=name_query)
+    elif radius_query:
+        planets = Planet.query.filter_by(radius=radius_query)
+    else:
+        planets = Planet.query.all()
+    
     results = [planet.to_dict() for planet in planets]
     
     return jsonify(results)
