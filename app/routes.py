@@ -40,11 +40,13 @@ planet_bp = Blueprint("planets", __name__, url_prefix="/planets")
 @planet_bp.route("", methods=["POST"])
 def create_planet():
     request_body = request.get_json()
-    new_planet = Planet(
-        name = request_body["name"],
-        description = request_body["description"],
-        radius = request_body["radius"]
-    )
+    # new_planet = Planet(
+    #     name = request_body["name"],
+    #     description = request_body["description"],
+    #     radius = request_body["radius"]
+    # )
+    new_planet = Planet.from_dict(request_body)
+
     db.session.add(new_planet)
     db.session.commit()
 
@@ -55,15 +57,7 @@ def create_planet():
 @planet_bp.route("", methods=["GET"])
 def get_all_planets():
     planets = Planet.query.all()
-    results = []
-
-    for planet in planets:
-        results.append(dict(
-            id=planet.id,
-            name=planet.name,
-            description=planet.description,
-            radius = planet.radius
-        ))
+    results = [planet.to_dict() for planet in planets]
     
     return jsonify(results)
 
@@ -85,13 +79,8 @@ def validate_planet(id):
 @planet_bp.route("/<id>", methods=["GET"])
 def get_planet(id):
     planet = validate_planet(id)
-    planet_dict = dict(
-        id=planet.id,
-        name=planet.name,
-        description=planet.description,
-        radius=planet.radius
-    )
-    return planet_dict
+
+    return planet.to_dict()
 
 @planet_bp.route("/<id>", methods=["PUT"])
 def update_planet(id):
