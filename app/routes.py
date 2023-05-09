@@ -102,6 +102,5 @@ def read_moons(id):
 
     moons_response = []
     for moon in planet.moons:
-        # new_moon = validate_model(Moon, moon.id)
         moons_response.append(moon.to_dict())
     return jsonify(moons_response)
