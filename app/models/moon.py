@@ -1,18 +1,19 @@
 from app import db
 
-class Planet(db.Model):
+class Moon(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String)
     description = db.Column(db.String)
-    radius = db.Column(db.String)
-    moons = db.relationship("Moon", back_populates="planet")
-
+    size = db.Column(db.String)
+    planet_id = db.Column(db.Integer, db.ForeignKey('planet.id'))
+    planet = db.relationship("Planet", back_populates="moons")
+    
     def to_dict(self):
         return {
             "id": self.id,
             "name": self.name,
             "desription": self.description,
-            "radius": self.radius
+            "size": self.size
         }
     
     @classmethod
@@ -20,5 +21,5 @@ class Planet(db.Model):
         return cls(
             name = data_dict["name"],
             description = data_dict["description"],
-            radius = data_dict["radius"]
+            size = data_dict["size"]
         )

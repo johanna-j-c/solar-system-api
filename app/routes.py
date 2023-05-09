@@ -1,5 +1,6 @@
 from app import db
 from app.models.planet import Planet
+from app.models.moon import Moon
 from flask import Blueprint, jsonify, abort, make_response, request
 
 planet_bp = Blueprint("planets", __name__, url_prefix="/planets")
@@ -76,3 +77,31 @@ def delete_planet(id):
     db.session.commit()
 
     return make_response(jsonify(f"Planet {planet_to_delete.name} deleted"), 200)
+
+# # Planet routes for accessing moon
+@planet_bp.route("/<id>/moons", methods=["POST"])
+def create_moon(id):
+    request_body = request.get_json()
+    planet = validate_model(Planet, id)
+    try:
+        new_moon = Moon.from_dict(request_body)
+        new_moon.planet = planet
+
+        db.session.add(new_moon)
+        db.session.commit()
+
+        message = f"Moon {new_moon.name} successfully created"
+
+        return make_response(jsonify(message), 201)
+    except KeyError as e:
+        abort(make_response({"message": f"Missing required value {e}"}, 400))
+    
+@planet_bp.route("/<id>/moons", methods=["GET"])
+def read_moons(id):
+    planet = validate_model(Planet, id)
+
+    moons_response = []
+    for moon in planet.moons:
+        # new_moon = validate_model(Moon, moon.id)
+        moons_response.append(moon.to_dict())
+    return jsonify(moons_response)
